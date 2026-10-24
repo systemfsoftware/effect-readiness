@@ -5,11 +5,11 @@
   "author": "Ryan Lee <drdgvhbh@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/systemfsoftware/systemfsoftware.git",
+    "url": "git+https://github.com/systemfsoftware/effect-readiness.git",
     "directory": "packages/effect-readiness"
   },
-  "homepage": "https://github.com/systemfsoftware/systemfsoftware/tree/main/packages/effect-readiness#readme",
-  "bugs": "https://github.com/systemfsoftware/systemfsoftware/issues",
+  "homepage": "https://github.com/systemfsoftware/effect-readiness/tree/main/packages/effect-readiness#readme",
+  "bugs": "https://github.com/systemfsoftware/effect-readiness/issues",
   "description": "Effect-native readiness waits — TCP, HTTP, and log conditions over a port mapping, with driver ports, staged dial evidence, and a loopback conformance suite.",
   "keywords": [
     "effect",
