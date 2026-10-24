@@ -1,0 +1,5 @@
+{
+  // The base every tooling/<name> package's tsconfig extends: Node ESM without the DOM, under the
+  // Effect language service. packages/effect-readiness carries its own project references.
+  "extends": ["@systemfsoftware/tsconfig/bundler/no-dom", "@systemfsoftware/tsconfig/effect"]
+}

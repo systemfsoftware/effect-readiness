@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: checks
+    permissions:
+      contents: read
+      actions: read
+    uses: systemfsoftware/systemfsoftware/.github/workflows/reusable-checks.yml@2ad94574b4f257f7376a9793fd550258f6ccd176
+    with:
+      runs-on: '["self-hosted","systemfsoftware-runner","amd64"]'
+      test-runs-on: '["self-hosted","systemfsoftware-runner","amd64"]'
+      timings: nix run github:systemfsoftware/systemfsoftware/2ad94574b4f257f7376a9793fd550258f6ccd176#test-timings --
+      gate-name: gate
+      lanes: >-
+        [{"id": "static", "name": "static (pnpm check:static)", "timeout-minutes": 30, "run": "pnpm check:static",
+          "docs-run": "./bin/dprint check"}]

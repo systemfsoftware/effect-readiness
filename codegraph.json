@@ -1,0 +1,6 @@
+{
+  "exclude": [
+    ".worktrees/",
+    "**/.stryker-tmp/"
+  ]
+}

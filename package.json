@@ -1,0 +1,36 @@
+{
+  "name": "effect-readiness",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workspace for @systemfsoftware/effect-readiness and the private tooling packages that gate it.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "turbo --concurrency=${TURBO_CONCURRENCY:-50%} build",
+    "typecheck": "turbo --concurrency=${TURBO_CONCURRENCY:-50%} --continue typecheck typecheck:node",
+    "typecheck:node": "tsc -p tsconfig.node.json",
+    "test": "turbo --concurrency=${TURBO_CONCURRENCY:-50%} test",
+    "lint": "./bin/dprint check && turbo --concurrency=${TURBO_CONCURRENCY:-50%} lint",
+    "api:check": "turbo --concurrency=${TURBO_CONCURRENCY:-50%} api:check",
+    "attw": "turbo --concurrency=${TURBO_CONCURRENCY:-50%} attw",
+    "check:static": "s=0; pnpm lint || s=1; pnpm typecheck || s=1; pnpm api:check || s=1; pnpm attw || s=1; exit $s",
+    "check:local": "s=0; pnpm check:static || s=1; pnpm test || s=1; exit $s",
+    "format": "./bin/dprint fmt",
+    "precommit": "pnpm exec lint-staged --no-revert --config .lintstagedrc.js",
+    "prepare": "husky && effect-tsgo patch --oxlint --no-typescript --skip-missing"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@commitlint/types": "catalog:",
+    "@effect/tsgo": "catalog:",
+    "@types/node": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "oxlint": "catalog:oxlint",
+    "oxlint-tsgolint": "catalog:oxlint",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@12.9.0"
+}

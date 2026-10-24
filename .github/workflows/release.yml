@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  release:
+    name: release · shared tooling
+    uses: systemfsoftware/pnpm-release-management/.github/workflows/release.yml@a3a0d8e3accd9701dc660d866272ee51b3818286
+    with:
+      ci-workflow: ci.yml
+      runs-on: '["self-hosted","systemfsoftware-runner","amd64"]'
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write

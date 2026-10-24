@@ -1,0 +1,7 @@
+# Doctrine packs, read from systemfsoftware/systemfsoftware at the commit this repository was seeded from.
+# Move `ref` deliberately, in its own pull request, when the core packs change.
+packs:
+  - source: https://github.com/systemfsoftware/systemfsoftware
+    ref: 2ad94574b4f257f7376a9793fd550258f6ccd176
+    path: compound-packs
+    pack: [cell-architecture, schema-modelling, package-surface, testing, ci-workflows]

@@ -1,0 +1,35 @@
+name: effect-readiness checks lane
+description: The steps systemfsoftware's reusable-checks.yml runs in this repository for each phase
+inputs:
+  lane:
+    description: plan, static, docs, test, test-after, timings or gate
+    required: true
+  job:
+    description: The test job from the plan, as JSON
+    required: false
+    default: "{}"
+  profile:
+    description: Conformance profile, `local` or `per-change`
+    required: false
+    default: per-change
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/dev-shell
+      if: inputs.lane == 'plan' || inputs.lane == 'docs' || inputs.lane == 'timings'
+      with:
+        install: "false"
+    - uses: ./.github/actions/dev-shell
+      if: inputs.lane == 'static' || inputs.lane == 'test'
+    - name: Lane environment
+      if: inputs.lane == 'static' || inputs.lane == 'test'
+      shell: bash
+      env:
+        PROFILE: ${{ inputs.profile }}
+      run: printf 'CI=true\nOXLINT_FORMAT=github\nTURBO_LOG_ORDER=stream\nCONFORMANCE_PROFILE=%s\n' "$PROFILE" >> "$GITHUB_ENV"
+    - name: Build the packages this test job tests
+      if: inputs.lane == 'test'
+      shell: bash
+      env:
+        FILTERS: ${{ fromJSON(inputs.job).filters }}
+      run: pnpm exec turbo run build --output-logs=errors-only $FILTERS

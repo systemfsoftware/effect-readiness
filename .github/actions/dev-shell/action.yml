@@ -1,0 +1,21 @@
+name: Dev shell
+description: >-
+  Puts this repository's flake dev shell (node, pnpm, bun, dprint, comment-checker, codegraph) on PATH and installs the
+  workspace from its lockfile
+inputs:
+  install:
+    description: Run pnpm install --frozen-lockfile after the dev shell is on PATH
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - uses: cachix/install-nix-action@v31
+      if: runner.environment == 'github-hosted'
+    - name: Dev shell on PATH
+      shell: bash
+      run: nix develop --command printenv PATH >> "$GITHUB_PATH"
+    - name: Install the workspace
+      if: inputs.install == 'true'
+      shell: bash
+      run: pnpm install --frozen-lockfile

@@ -1,0 +1,20 @@
+name: Release gate
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      actions: read

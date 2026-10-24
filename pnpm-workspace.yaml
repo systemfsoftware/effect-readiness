@@ -1,0 +1,43 @@
+packages:
+  - packages/*
+  - tooling/*
+allowBuilds:
+  "@parcel/watcher": false
+  esbuild: false
+  msgpackr-extract: false
+  unrs-resolver: false
+catalog:
+  "@commitlint/cli": ^21
+  "@commitlint/config-conventional": ^21
+  "@commitlint/types": ^21
+  "@effect/platform-node": ^4.0.5
+  "@effect/tsgo": ^0.51.1
+  "@microsoft/api-extractor": ^7.59.4
+  "@types/node": ^26.6.5
+  effect: ^4.0.5
+  fast-check: ^4.10.2
+  husky: ^9.1.7
+  lint-staged: ^17
+  rimraf: ^6.1.3
+  tsdown: ^0.23.0
+  turbo: ^2
+  typescript: ^7.0.2
+  vite: ^8.3.4
+  vitest: ^5.0.5
+catalogMode: prefer
+catalogs:
+  peers:
+    effect: ^4
+  oxlint:
+    oxlint: ~1.87.0
+    oxlint-tsgolint: 7.0.2003
+minimumReleaseAge: 1440
+overrides:
+  fast-check: "catalog:"
+  vite: "catalog:"
+patchedDependencies:
+  rolldown-plugin-dts@0.28.6: patches/rolldown-plugin-dts@0.28.6.patch
+supportedArchitectures:
+  os: [linux]
+  cpu: [x64, arm64]
+  libc: [glibc]

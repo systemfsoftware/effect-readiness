@@ -1,0 +1,26 @@
+# Build and test output
+node_modules/
+dist/
+.turbo/
+coverage/
+reports/
+.vitest/
+.stryker-tmp/
+temp/
+__tmp__/
+*.tsbuildinfo
+
+# Nix and direnv
+.direnv/
+/result
+/result-*
+
+# Machine-local agent state
+.mcp.json
+
+# Local credential files: a token lives in the user's environment or the CI secret, never in the tree
+.env
+.env.*
+.netrc
+*.pem
+*.key
