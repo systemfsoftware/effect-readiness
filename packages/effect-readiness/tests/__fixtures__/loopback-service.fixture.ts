@@ -17,9 +17,11 @@ export interface LoopbackService {
 }
 
 /** The release probe fails with this when a stopped probe still holds a server connection. */
-export class ConnectionLeak extends Schema.TaggedError<ConnectionLeak>()('ConnectionLeak', {
-  open: Schema.Int,
-}) {}
+export class ConnectionLeak
+  extends Schema.TaggedError<ConnectionLeak, { readonly brand: unique symbol }>()('ConnectionLeak', {
+    open: Schema.Int,
+  })
+{}
 
 const zeroOpenConnections = (open: () => number): Effect.Effect<void, ConnectionLeak> =>
   Effect.repeat(

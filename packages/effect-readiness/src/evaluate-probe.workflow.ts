@@ -5,10 +5,12 @@ import { Condition } from './Condition.schema.js'
 import { ProbeEvidence } from './ProbeEvidence.schema.js'
 import { NotYet, ProbeVerdict, Satisfied } from './ProbeVerdict.schema.js'
 
-export class EvaluateProbe extends Schema.TaggedClass<EvaluateProbe>()('EvaluateProbe', {
-  condition: Condition,
-  evidence: ProbeEvidence,
-}) {
+export class EvaluateProbe
+  extends Schema.TaggedClass<EvaluateProbe, { readonly brand: unique symbol }>()('EvaluateProbe', {
+    condition: Condition,
+    evidence: ProbeEvidence,
+  })
+{
   static readonly [Workflow.InstrumentationBrand] = {} as const
 }
 
