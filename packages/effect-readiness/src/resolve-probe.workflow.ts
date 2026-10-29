@@ -9,17 +9,21 @@ const ProbePlanTypeId: unique symbol = Symbol.for('@systemfsoftware/effect-readi
 type ProbePlanTypeId = typeof ProbePlanTypeId
 
 /** The condition names a port with no binding behind it; no host probe runs. */
-export class ProbeAbsent extends Schema.TaggedClass<ProbeAbsent>()('ProbeAbsent', { guestPort: Schema.Int }) {
+export class ProbeAbsent
+  extends Schema.TaggedClass<ProbeAbsent, { readonly brand: unique symbol }>()('ProbeAbsent', { guestPort: Schema.Int })
+{
   readonly [ProbePlanTypeId] = ProbePlanTypeId
 }
 
 /** The condition dials the bound host socket. */
-export class ProbeTcp extends Schema.TaggedClass<ProbeTcp>()('ProbeTcp', { binding: PortBinding }) {
+export class ProbeTcp
+  extends Schema.TaggedClass<ProbeTcp, { readonly brand: unique symbol }>()('ProbeTcp', { binding: PortBinding })
+{
   readonly [ProbePlanTypeId] = ProbePlanTypeId
 }
 
 /** The condition exchanges an HTTP request over the bound host socket. */
-export class ProbeHttp extends Schema.TaggedClass<ProbeHttp>()('ProbeHttp', {
+export class ProbeHttp extends Schema.TaggedClass<ProbeHttp, { readonly brand: unique symbol }>()('ProbeHttp', {
   binding: PortBinding,
   path: Schema.String,
 }) {
@@ -27,7 +31,9 @@ export class ProbeHttp extends Schema.TaggedClass<ProbeHttp>()('ProbeHttp', {
 }
 
 /** The condition reads the guest log stream for a pattern. */
-export class ProbeLog extends Schema.TaggedClass<ProbeLog>()('ProbeLog', { pattern: Schema.String }) {
+export class ProbeLog
+  extends Schema.TaggedClass<ProbeLog, { readonly brand: unique symbol }>()('ProbeLog', { pattern: Schema.String })
+{
   readonly [ProbePlanTypeId] = ProbePlanTypeId
 }
 
@@ -35,10 +41,12 @@ export class ProbeLog extends Schema.TaggedClass<ProbeLog>()('ProbeLog', { patte
 export const ProbePlan = Schema.Union([ProbeAbsent, ProbeTcp, ProbeHttp, ProbeLog])
 export type ProbePlan = typeof ProbePlan.Type
 
-export class ResolveProbe extends Schema.TaggedClass<ResolveProbe>()('ResolveProbe', {
-  target: ProbeTarget,
-  condition: Condition,
-}) {
+export class ResolveProbe
+  extends Schema.TaggedClass<ResolveProbe, { readonly brand: unique symbol }>()('ResolveProbe', {
+    target: ProbeTarget,
+    condition: Condition,
+  })
+{
   static readonly [Workflow.InstrumentationBrand] = {} as const
 }
 
