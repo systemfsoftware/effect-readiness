@@ -103,6 +103,7 @@ overrides:
   "@systemfsoftware/vitest": file:.sfs-deps/vitest-3.0.0.tgz
   "@systemfsoftware/vitest-config": file:.sfs-deps/vitest-config-0.1.1.tgz
   effect: "catalog:"
+  "@effect/tsgo": "catalog:"
   "@effect/opentelemetry": "catalog:"
   "@effect/platform-node-shared": "catalog:"
   oxlint: "catalog:oxlint"
