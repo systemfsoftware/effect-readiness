@@ -4,7 +4,7 @@ extends: .github
 queue_rules:
   - name: default
     queue_conditions:
-      - check-success = no merge conflicts
+      - check-success = no merge conflicts / no merge conflicts
       - check-success = build · lint · typecheck · test / static checks (pnpm check:static)
       - or:
           - check-success = commitlint / lint PR commits
