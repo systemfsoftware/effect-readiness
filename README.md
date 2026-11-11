@@ -4,13 +4,10 @@ Effect-native readiness waits for services exposed through port mappings. Poll T
 
 ## Install
 
-The latest published package is **1.0.0**. The examples below describe that release; this repository's main branch is at 1.1.2, which is not published to npm.
+https://nix.systemfsoftware.com is the package registry for `@systemfsoftware` packages: a producer pushes its package tarballs there from `main`, a consumer substitutes them through its flake inputs, and nothing is published to npm.
 
-In an existing npm project:
-
-```bash
-npm install @systemfsoftware/effect-readiness@1.0.0
-```
+Consume the package through its flake input, pinned by `flake.lock`. The main branch is at 1.1.2.
+The `nixConfig` in `flake.nix` names the registry as a substituter.
 
 ## Usage
 
@@ -56,7 +53,7 @@ Set `timeoutMs` and `pollMs` in the target options to control the deadline and p
 
 ## Version status
 
-The 1.0.0 example above uses the published package, not the unpublished source on main. Consult the source when working on the unreleased version.
+The usage examples describe 1.0.0; the source on main is 1.1.2. Consult the source when working on the unreleased version.
 
 ## Contributing
 

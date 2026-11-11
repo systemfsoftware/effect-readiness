@@ -4,9 +4,9 @@ Composable readiness probes and condition polling for Effect applications, conta
 
 ## Installation
 
-```bash
-pnpm add @systemfsoftware/effect-readiness
-```
+https://nix.systemfsoftware.com is the package registry for `@systemfsoftware` packages: a producer pushes its package tarballs there from `main`, a consumer substitutes them through its flake inputs, and nothing is published to npm.
+
+Take `@systemfsoftware/effect-readiness` from the repository's flake, which pins its tarball in `flake.lock`; see the repository README's [Install](../../README.md) section.
 
 ## Features
 
