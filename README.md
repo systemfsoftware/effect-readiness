@@ -1,17 +1,70 @@
 # effect-readiness
 
-Effect-native readiness waits for services exposed through port mappings. Poll TCP connections, HTTP responses, or log entries until a condition is satisfied or a deadline expires.
+Effect-native readiness waits for a service exposed through a port mapping. Poll a TCP port, an HTTP path or a log for a pattern until it is satisfied or a deadline passes, and get back a typed verdict.
 
 ## Install
 
-https://nix.systemfsoftware.com is the package registry for `@systemfsoftware` packages: a producer pushes its package tarballs there from `main`, a consumer substitutes them through its flake inputs, and nothing is published to npm.
+`@systemfsoftware` packages are distributed as Nix tarballs from `nix.systemfsoftware.com`, not from npm, so do not run `npm install` or `pnpm add` for them. Take them through a flake. Third-party peers such as `effect` install from npm as usual.
 
-Consume the package through its flake input, pinned by `flake.lock`. The main branch is at 1.1.2.
-The `nixConfig` in `flake.nix` names the registry as a substituter.
+Add the producer as a flake input in your project's `flake.nix`. Pin it to a full commit SHA or a release tag:
+
+```nix
+{
+  nixConfig = {
+    extra-substituters = "https://nix.systemfsoftware.com";
+    extra-trusted-public-keys = "nix-cache-1:wXA8I4DayNW9q6enUyQA/P/nT38pGSTLt374t3gsn7M=";
+    fallback = true;
+  };
+
+  inputs = {
+    nixpkgs.follows = "effect-readiness/nixpkgs";
+    effect-readiness.url = "github:systemfsoftware/effect-readiness/<rev>";
+    pnpm-release-management.url = "github:systemfsoftware/pnpm-release-management";
+  };
+
+  outputs = { self, nixpkgs, effect-readiness, pnpm-release-management }: {
+    packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+      let pkgs = nixpkgs.legacyPackages.${system}; in rec {
+        producer-tarballs = pnpm-release-management.lib.mkProducerTarballs {
+          inherit pkgs;
+          producers = { inherit effect-readiness; };
+        };
+        pnpm-store = pnpm-release-management.lib.mkPnpmConsumerStore {
+          inherit pkgs;
+          src = self;
+          files.".deps" = producer-tarballs;
+        };
+      });
+
+    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+      let pkgs = nixpkgs.legacyPackages.${system}; in {
+        default = pkgs.mkShell {
+          packages = [ pkgs.nodejs_24 pkgs.pnpm_12 ];
+          shellHook = self.packages.${system}.producer-tarballs.shellHook;
+        };
+      });
+  };
+}
+```
+
+Then, inside `nix develop`:
+
+```sh
+nix eval --raw .#producer-tarballs.overrides   # paste the output into pnpm-workspace.yaml
+pnpm add effect
+```
+
+Declare the package in `package.json` as a tarball in `.deps/`:
+
+```json
+"@systemfsoftware/effect-readiness": "file:.deps/effect-readiness.tgz"
+```
+
+Add `.deps/` to `.gitignore`.
 
 ## Usage
 
-This example supplies log entries through a `LogSource` and waits for the word `ready`. Save it as `example.mjs` and run it with Node.js:
+This example supplies log entries through a `LogSource` and waits for the word `ready`. Save it as `example.mjs`:
 
 ```js
 import { Readiness } from '@systemfsoftware/effect-readiness'
@@ -31,11 +84,11 @@ const verdict = await Effect.runPromise(program)
 console.log(verdict._tag)
 ```
 
-```bash
-node example.mjs
+```text
+Satisfied
 ```
 
-The output is `Satisfied`. Replace the example `LogSource` with one that reads your service's logs.
+Replace the example `LogSource` with one that reads your service's logs.
 
 ## Conditions
 
@@ -45,19 +98,15 @@ The output is `Satisfied`. Replace the example `LogSource` with one that reads y
 | `Readiness.Wait.forHttp(path, port)` | An HTTP response with a successful status.   |
 | `Readiness.Wait.forLog(pattern)`     | A log entry matching the regular expression. |
 
-TCP and HTTP conditions use the guest port to select a binding supplied to `Readiness.target`, whose entries contain `guest`, `host`, and `hostPort`. The Node host prober implements socket access; `HostProber` and `LogSource` are Effect services that can be supplied by the caller.
+TCP and HTTP conditions take the guest port and find its binding among the port bindings passed to `Readiness.target`. Each binding has `guest`, `host` and `hostPort`. `HostProber` and `LogSource` are Effect services. `Readiness.NodeHostProber.layer` implements host socket access on Node.js; supply your own `HostProber` or `LogSource` to change what is observed.
 
-## Timeouts and errors
+## Timeouts and verdicts
 
-Set `timeoutMs` and `pollMs` in the target options to control the deadline and polling interval. A completed wait returns a `Satisfied` or `TimedOut` verdict; log-source and invalid-input failures are represented as typed errors.
-
-## Version status
-
-The usage examples describe 1.0.0; the source on main is 1.1.2. Consult the source when working on the unreleased version.
+`timeoutMs` (default 30000) sets the deadline and `pollMs` (default 250) sets the polling interval. A wait returns `Satisfied` or `TimedOut`. A log source that fails and an invalid input are typed errors (`LogSourceError`, `ProbeInputInvalid`), not verdicts.
 
 ## Contributing
 
-Development setup and checks: [CONTRIBUTING.md](CONTRIBUTING.md).
+Development setup and checks are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Support
 
