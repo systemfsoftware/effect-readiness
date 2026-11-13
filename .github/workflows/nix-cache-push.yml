@@ -77,7 +77,7 @@ jobs:
             echo "::error title=nix-cache-push::workspace-tarballs lists no members, so there is nothing to push"
             exit 1
           fi
-          attrs=(workspace-tarballs "${members[@]}")
+          attrs=(workspace-tarballs pnpm-store producer-tarballs "${members[@]}")
           {
             echo "The push set (${SYSTEM}):"
             printf -- '- %s\n' "${attrs[@]}"
