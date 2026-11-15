@@ -6,9 +6,9 @@ Extracted from `systemfsoftware/systemfsoftware` (core); package history came wi
 
 ## Packages
 
-| Package                             | Version | Distributed    |
-| ----------------------------------- | ------- | -------------- |
-| `@systemfsoftware/effect-readiness` | 1.1.2   | yes (npm) |
+| Package                             | Version | Distributed |
+| ----------------------------------- | ------- | ----------- |
+| `@systemfsoftware/effect-readiness` | 1.1.2   | yes (npm)   |
 
 ## Dependencies on core
 

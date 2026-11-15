@@ -9,6 +9,7 @@ pnpm add @systemfsoftware/effect-readiness effect
 ```
 
 Its peer dependencies, `effect@^4.1.2` and `typescript@>=7.0.0`, come from your project: this package declares them but does not install them, so one copy is shared with the rest of your project.
+
 ## Features
 
 - **Protocol Agnostic**: Wait for TCP port connectivity, HTTP endpoint health (`2xx` responses), or stdout/stderr log stream patterns.
