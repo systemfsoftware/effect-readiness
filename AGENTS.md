@@ -6,18 +6,13 @@ Extracted from `systemfsoftware/systemfsoftware` (core); package history came wi
 
 ## Packages
 
-| Package                             | Version | Distributed    |
-| ----------------------------------- | ------- | -------------- |
-| `@systemfsoftware/effect-readiness` | 1.1.2   | yes (registry) |
+| Package                             | Version | Distributed |
+| ----------------------------------- | ------- | ----------- |
+| `@systemfsoftware/effect-readiness` | 1.1.2   | yes (npm)   |
 
 ## Dependencies on core
 
-https://nix.systemfsoftware.com is the package registry for `@systemfsoftware` packages: a producer pushes its package tarballs there from `main`, a consumer substitutes them through its flake inputs, and nothing is published to npm.
-
-`flake.nix` pins core at a full commit (input `core`) and `lib.mkProducerTarballs` lays core's tarballs under
-`.deps/`. `pnpm-workspace.yaml` maps each core package to `file:.deps/<name>.tgz` through `overrides`; the
-moved manifests name ordinary semver ranges. To take newer core packages: bump the `core` input, regenerate the
-overrides with `nix eval --raw .#producer-tarballs.overrides`, then run `pnpm update '@systemfsoftware/*'`.
+`@systemfsoftware` packages come from npm like any other dependency: package manifests and catalogs name caret ranges and `pnpm-lock.yaml` holds the exact versions. Take newer ones with `pnpm update '@systemfsoftware/*'`. `flake.nix` pins core at a full commit (input `core`) only for its dprint build and its nixpkgs.
 
 Local setup:
 

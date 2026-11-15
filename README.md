@@ -4,62 +4,11 @@ Effect-native readiness waits for a service exposed through a port mapping. Poll
 
 ## Install
 
-`@systemfsoftware` packages are distributed as Nix tarballs from `nix.systemfsoftware.com`, not from npm, so do not run `npm install` or `pnpm add` for them. Take them through a flake. Third-party peers such as `effect` install from npm as usual.
-
-Add the producer as a flake input in your project's `flake.nix`. Pin it to a full commit SHA or a release tag:
-
-```nix
-{
-  nixConfig = {
-    extra-substituters = "https://nix.systemfsoftware.com";
-    extra-trusted-public-keys = "nix-cache-1:wXA8I4DayNW9q6enUyQA/P/nT38pGSTLt374t3gsn7M=";
-  };
-
-  inputs = {
-    nixpkgs.follows = "effect-readiness/nixpkgs";
-    effect-readiness.url = "github:systemfsoftware/effect-readiness/<rev>";
-    pnpm-release-management.url = "github:systemfsoftware/pnpm-release-management";
-  };
-
-  outputs = { self, nixpkgs, effect-readiness, pnpm-release-management }: {
-    packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
-      let pkgs = nixpkgs.legacyPackages.${system}; in rec {
-        producer-tarballs = pnpm-release-management.lib.mkProducerTarballs {
-          inherit pkgs;
-          producers = { inherit effect-readiness; };
-        };
-        pnpm-store = pnpm-release-management.lib.mkPnpmConsumerStore {
-          inherit pkgs;
-          src = self;
-          files.".deps" = producer-tarballs;
-        };
-      });
-
-    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
-      let pkgs = nixpkgs.legacyPackages.${system}; in {
-        default = pkgs.mkShell {
-          packages = [ pkgs.nodejs_24 pkgs.pnpm_12 ];
-          shellHook = self.packages.${system}.producer-tarballs.shellHook;
-        };
-      });
-  };
-}
-```
-
-Then, inside `nix develop`:
-
 ```sh
-nix eval --raw .#producer-tarballs.overrides   # paste the output into pnpm-workspace.yaml
-pnpm add effect
+pnpm add @systemfsoftware/effect-readiness effect
 ```
 
-Declare the package in `package.json` as a tarball in `.deps/`:
-
-```json
-"@systemfsoftware/effect-readiness": "file:.deps/effect-readiness.tgz"
-```
-
-Add `.deps/` to `.gitignore`.
+Its peer dependencies, `effect@^4.1.2` and `typescript@>=7.0.0`, come from your project: this package declares them but does not install them, so one copy is shared with the rest of your project.
 
 ## Usage
 
