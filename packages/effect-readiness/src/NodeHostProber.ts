@@ -12,7 +12,20 @@ const textOf = (chunk: string | Uint8Array): string => typeof chunk === 'string'
 
 const firstLineOf = (text: string): string => text.split('\r\n')[0] ?? ''
 
-const requestOf = (path: string): string => `GET ${path} HTTP/1.0\r\nHost: ref\r\nConnection: close\r\n\r\n`
+const DEFAULT_HTTP_PORT = 80
+
+/**
+ * The authority the probe dials, as the `Host` header names it (RFC 9112 §3.2, RFC 3986 §3.2.2): an IPv6 literal is
+ * bracketed, and the default port is left out as HTTP clients do. A server that enforces its domain, such as Grafana
+ * with `enforce_domain`, redirects a request naming any other host.
+ */
+const uriHostOf = (host: string): string => host.includes(':') ? `[${host}]` : host
+
+const hostHeaderOf = (binding: PortBinding): string =>
+  binding.hostPort === DEFAULT_HTTP_PORT ? uriHostOf(binding.host) : `${uriHostOf(binding.host)}:${binding.hostPort}`
+
+const requestOf = (binding: PortBinding, path: string): string =>
+  `GET ${path} HTTP/1.0\r\nHost: ${hostHeaderOf(binding)}\r\nConnection: close\r\n\r\n`
 
 const connect = (binding: PortBinding) =>
   Effect.option(NodeSocket.makeNet({ host: binding.host, port: binding.hostPort }))
@@ -36,12 +49,16 @@ const respondedOrRefused = (statusLine: string): HttpEvidence =>
     (): HttpEvidence => ({ _tag: 'Refused' }),
   )
 
-const exchangeEvidenceOf = (socket: Socket.Socket, path: string): Effect.Effect<HttpEvidence, never, Scope.Scope> =>
+const exchangeEvidenceOf = (
+  socket: Socket.Socket,
+  binding: PortBinding,
+  path: string,
+): Effect.Effect<HttpEvidence, never, Scope.Scope> =>
   Effect.option(
     Effect.gen(function*() {
       const writer = yield* socket.writer
       const reader = yield* socket.reader
-      yield* writer.write(requestOf(path))
+      yield* writer.write(requestOf(binding, path))
       const chunk = yield* reader.pull
       return firstLineOf(textOf(chunk[0]))
     }),
@@ -76,7 +93,7 @@ export const layer: Layer.Layer<HostProber> = Layer.succeed(HostProber, {
         connect(binding),
         Option.match({
           onNone: () => Effect.succeed<HttpEvidence>({ _tag: 'Refused' }),
-          onSome: (socket) => exchangeEvidenceOf(socket, path),
+          onSome: (socket) => exchangeEvidenceOf(socket, binding, path),
         }),
       ),
     ),
